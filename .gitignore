@@ -1,1 +1,7 @@
 /node_modules
+
+separated/*
+!separated/.gitkeep
+
+uploads/*
+!uploads/.gitkeep
