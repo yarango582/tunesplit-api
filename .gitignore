@@ -1,7 +1,1 @@
 /node_modules
-
-# subir la carpeta separated pero no su contenido
-/separated/*
-
-# subir la carpeta uploads pero no su contenido
-/uploads/*
