@@ -4,8 +4,14 @@ FROM node:20
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /usr/app
 
-#Copy the source code to the container
+# Copia la carpeta src al directorio de trabajo
 COPY src ./
+
+# Copia carpeta sepated y carpeta uploads
+COPY separated ./separated
+
+# Copia la carpeta uploads
+COPY uploads ./uploads
 
 # Copia los archivos de package.json y package-lock.json al directorio de trabajo
 COPY package*.json ./
