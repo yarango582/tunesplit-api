@@ -36,7 +36,7 @@ RUN echo '{ \
 }' > /usr/app/config.json
 
 # Definimos la capacidad de memoria del contenedor
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 
 # Definimos la separacion de cpu y el numero de hilos
 ENV SPLEETER_CONFIG="/usr/app/config.json"
