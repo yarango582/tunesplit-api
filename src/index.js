@@ -36,32 +36,32 @@ app.use(cors(corsOptions));
 app.use('/audio', express.static(path.join(__dirname, '..', 'separated')));
 
 
-async function runExtendedDiagnostics() {
-    console.log('Running extended diagnostics...');
-    try {
-        const { stdout: pythonVersion } = await exec('python3 --version');
-        console.log('Python version:', pythonVersion.trim());
+// async function runExtendedDiagnostics() {
+//     console.log('Running extended diagnostics...');
+//     try {
+//         const { stdout: pythonVersion } = await exec('python3 --version');
+//         console.log('Python version:', pythonVersion.trim());
 
-        const { stdout: spleeterVersion } = await exec('spleeter --version');
-        console.log('Spleeter version:', spleeterVersion.trim());
+//         const { stdout: spleeterVersion } = await exec('spleeter --version');
+//         console.log('Spleeter version:', spleeterVersion.trim());
 
-        const { stdout: ffmpegVersion } = await exec('ffmpeg -version');
-        console.log('FFmpeg version:', ffmpegVersion.split('\n')[0]);
+//         const { stdout: ffmpegVersion } = await exec('ffmpeg -version');
+//         console.log('FFmpeg version:', ffmpegVersion.split('\n')[0]);
 
-        const { stdout: diskSpace } = await exec('df -h');
-        console.log('Disk space:\n', diskSpace);
+//         const { stdout: diskSpace } = await exec('df -h');
+//         console.log('Disk space:\n', diskSpace);
 
-        const { stdout: memInfo } = await exec('free -m');
-        console.log('Memory info:\n', memInfo);
+//         const { stdout: memInfo } = await exec('free -m');
+//         console.log('Memory info:\n', memInfo);
 
-        const { stdout: envVars } = await exec('env');
-        console.log('Environment variables:\n', envVars);
+//         const { stdout: envVars } = await exec('env');
+//         console.log('Environment variables:\n', envVars);
 
-        console.log('Extended diagnostics completed.');
-    } catch (error) {
-        console.error('Error running extended diagnostics:', error);
-    }
-}
+//         console.log('Extended diagnostics completed.');
+//     } catch (error) {
+//         console.error('Error running extended diagnostics:', error);
+//     }
+// }
 
 async function runSpleeterStepByStep(inputFile, outputDir) {
     console.log('Running Spleeter step by step...');
@@ -185,5 +185,5 @@ app.get('/audio/:timestamp/:filename/:instrument', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);
-    await runExtendedDiagnostics();
+    // await runExtendedDiagnostics();
 });
