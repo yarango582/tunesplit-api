@@ -57,9 +57,6 @@ async function runExtendedDiagnostics() {
         const { stdout: envVars } = await exec('env');
         console.log('Environment variables:\n', envVars);
 
-        const { stdout: dirStructure } = await exec('ls -R /usr/app');
-        console.log('Directory structure:\n', dirStructure);
-
         console.log('Extended diagnostics completed.');
     } catch (error) {
         console.error('Error running extended diagnostics:', error);
@@ -165,41 +162,6 @@ app.post('/analyze', upload.single('audioFile'), async (req, res) => {
     }
 });
 
-app.post('/analyze', upload.single('audioFile'), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).send('No file uploaded.');
-    }
-
-    const timestamp = path.basename(req.file.filename, path.extname(req.file.filename));
-    const outputDir = path.join('separated', timestamp);
-
-    try {
-        console.log(`Creating output directory: ${outputDir}`);
-        await fs.mkdir(outputDir, { recursive: true });
-
-        console.log(`Starting audio separation for file: ${req.file.path}`);
-        await separateAudio(req.file.path, outputDir);
-
-        console.log('Audio separation completed successfully');
-
-        const instruments = [
-            { name: 'Vocals', file: `/audio/${timestamp}/${timestamp}/vocals.wav`, volume: 100 },
-            { name: 'Drums', file: `/audio/${timestamp}/${timestamp}/drums.wav`, volume: 100 },
-            { name: 'Bass', file: `/audio/${timestamp}/${timestamp}/bass.wav`, volume: 100 },
-            { name: 'Piano', file: `/audio/${timestamp}/${timestamp}/piano.wav`, volume: 100 },
-            { name: 'Other', file: `/audio/${timestamp}/${timestamp}/other.wav`, volume: 100 },
-        ];
-
-        res.json({ instruments });
-
-        console.log(`Deleting input file: ${req.file.path}`);
-        await fs.unlink(req.file.path);
-    } catch (error) {
-        console.error('Error processing file:', error);
-        res.status(500).send(`Error processing file: ${error.message}`);
-    }
-});
-
 app.get('/audio/:timestamp/:filename/:instrument', (req, res) => {
     const { timestamp, filename, instrument } = req.params;
     const filePath = path.join(__dirname, '..', 'separated', timestamp, filename, `${instrument}.wav`);
@@ -223,5 +185,5 @@ app.get('/audio/:timestamp/:filename/:instrument', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);
-    // await runExtendedDiagnostics();
+    await runExtendedDiagnostics();
 });
