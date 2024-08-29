@@ -1,48 +1,55 @@
-# Usa una imagen de Python como base
-FROM python:3.8
+# Use a more lightweight Python image as base
+FROM python:3.8-slim
 
-# Instala Node.js
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
-RUN apt-get update && apt-get install -y nodejs
+# Install Node.js
+RUN apt-get update && apt-get install -y curl && \
+    curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Instala ffmpeg y otras dependencias
-RUN apt-get update && apt-get install -y ffmpeg libsndfile1
+# Install ffmpeg and other dependencies
+RUN apt-get update && \
+    apt-get install -y ffmpeg libsndfile1 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Instala Spleeter y sus dependencias
-RUN pip install spleeter==2.3.0 tensorflow==2.5.0
+# Install Spleeter and its dependencies
+RUN pip install --no-cache-dir spleeter==2.3.0 tensorflow==2.5.0
 
-# Pre-descarga el modelo de Spleeter
-RUN mkdir -p /root/.cache/spleeter
-RUN spleeter separate -p spleeter:5stems -o /tmp /dev/null
+# Pre-download the Spleeter model
+RUN mkdir -p /root/.cache/spleeter && \
+    spleeter separate -p spleeter:5stems -o /tmp /dev/null && \
+    rm -rf /tmp/*
 
-# Crea directorios necesarios y ajusta permisos
-RUN mkdir -p /usr/app/separated /usr/app/uploads
-RUN chmod 777 /usr/app/separated /usr/app/uploads
+# Create necessary directories and adjust permissions
+RUN mkdir -p /usr/app/separated /usr/app/uploads && \
+    chmod 777 /usr/app/separated /usr/app/uploads
 
-# Establece el directorio de trabajo en el contenedor
+# Set the working directory in the container
 WORKDIR /usr/app
 
-# Copia los archivos necesarios
+# Copy only necessary files
 COPY src ./src
 COPY package*.json ./
 
-# Instala las dependencias de Node.js
-RUN npm install
+# Install Node.js dependencies
+RUN npm ci --only=production
 
-# Crea el archivo de configuración para Spleeter
+# Create the configuration file for Spleeter
 RUN echo '{ \
   "cpu_separation": true, \
   "cpu_threads": 4 \
 }' > /usr/app/config.json
 
-# Definimos la capacidad de memoria del contenedor
-ENV NODE_OPTIONS="--max-old-space-size=8192"
-
-# Definimos la separacion de cpu y el numero de hilos
+# Set environment variables
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV SPLEETER_CONFIG="/usr/app/config.json"
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
-# Exponer el puerto en el que la aplicación correrá
+# Expose the port on which the application will run
 EXPOSE 3001
 
-# Comando para ejecutar la aplicación
-CMD ["node", "src/index.js"]
+# Command to run the application
+CMD ["node", "--max-old-space-size=4096", "src/index.js"]
