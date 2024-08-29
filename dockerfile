@@ -37,19 +37,19 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Create the configuration file for Spleeter
-RUN echo '{ \
-  "cpu_separation": true, \
-  "cpu_threads": 4 \
-}' > /usr/app/config.json
+# RUN echo '{ \
+#   "cpu_separation": true, \
+#   "cpu_threads": 4 \
+# }' > /usr/app/config.json
 
 # Set environment variables
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-ENV SPLEETER_CONFIG="/usr/app/config.json"
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+# ENV NODE_OPTIONS="--max-old-space-size=4096"
+# ENV SPLEETER_CONFIG="/usr/app/config.json"
+# ENV PYTHONUNBUFFERED=1
+# ENV PYTHONDONTWRITEBYTECODE=1
 
 # Expose the port on which the application will run
 EXPOSE 3001
 
 # Command to run the application
-CMD ["node", "--max-old-space-size=4096", "src/index.js"]
+CMD ["node", "src/index.js"]

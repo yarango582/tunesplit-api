@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const cleanup = async () => {
     console.log('Cleaning up old files...');
     const uploadDir = path.join(__dirname, 'uploads');
